@@ -11,10 +11,13 @@ ledd=Pin(27, Pin.OUT)
 ledd.value(0)
 global led_r
 led_r = Pin(21, Pin.OUT)
+led_r.value(0)
 global led_g
 led_g = Pin(22, Pin.OUT)
+led_g.value(0)
 global led_b
 led_b = Pin(20, Pin.OUT)
+led_b.value(0)
 global a
 a=0
 global b
@@ -73,4 +76,5 @@ async def main():
     
     
 asyncio.run(main())
+
 
