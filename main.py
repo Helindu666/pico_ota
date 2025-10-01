@@ -5,6 +5,8 @@ import uasyncio as asyncio
 from ota import OTAUpdater
 from WIFI_CONFIG import SSID, PASSWORD,url
 
+global led
+ledd=Pin(27, Pin.OUT)
 global led_r
 led_r = Pin(21, Pin.OUT)
 global led_g
@@ -36,11 +38,13 @@ def ota_update(SSID, PASSWORD,url):
         try:
             ota_updater = OTAUpdater(SSID, PASSWORD,url,"main.py")
             ota_updater.connect_wifi()
-            ota_updater.check_for_update()
+            ota_updater.check_for_updates()
             if ota_updater.update_available:
                 print("Update available. Starting update...")
                 update_available = True
+                ledd.value(1)
                 time.sleep(2)
+                ledd.value(0)
                 ota_updater.download_and_install_update_if_available()
                 print("Update completed. Restarting...")
             else:
