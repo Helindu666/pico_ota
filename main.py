@@ -6,7 +6,10 @@ import uasyncio as asyncio
 from ota import OTAUpdater
 from WIFI_CONFIG import SSID, PASSWORD,url
 
-global led
+global ledw
+ledw=Pin(28, Pin.OUT)
+ledw.value(0)
+global ledd
 ledd=Pin(27, Pin.OUT)
 ledd.value(0)
 global led_r
@@ -76,5 +79,6 @@ async def main():
     
     
 asyncio.run(main())
+
 
 
