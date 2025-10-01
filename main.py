@@ -30,11 +30,11 @@ async def led():
         print(b)
         b+=1
         led_b.toggle()
-        await asyncio.sleep(1)
+        await asyncio.sleep(0.5)
         led_g.toggle()
-        await asyncio.sleep(1)
+        await asyncio.sleep(0.5)
         led_r.toggle()
-        await asyncio.sleep(1)
+        await asyncio.sleep(0.5)
 
 # OTA update function
 def ota_update(SSID, PASSWORD,url):
@@ -73,3 +73,4 @@ async def main():
     
     
 asyncio.run(main())
+
