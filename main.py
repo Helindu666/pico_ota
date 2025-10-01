@@ -2,56 +2,60 @@ import uasyncio as asyncio
 import time
 from machine import Pin
 from ota import OTAUpdater
-from WIFI_CONFIG import SSID, PASSWORD
+from WIFI_CONFIG import SSID, PASSWORD,url
 
 # LED pins
+global led_r
 led_r = Pin(20, Pin.OUT)
+global led_g
 led_g = Pin(21, Pin.OUT)
+global led_b
 led_b = Pin(22, Pin.OUT)
-
-# OTA URL
-url = "https://raw.githubusercontent.com/Helindu666/pico_ota/main.py"
-
-# Counter
-a = 0
+global a
+a=0
+global b
 b=0
+global ota_updater
+global update_available
+update_available = False
 
-async def ota_task(timeout_sec=8):
-    global a
-    try:
-        # Run OTA in a thread with a timeout
-        ota_updater = OTAUpdater(SSID,PASSWORD,url,"main.py")
-        await asyncio.wait_for(asyncio.to_thread(ota_updater.download_and_install_update_if_available), timeout_sec)
-        print("OTA completed successfully.")
-    except asyncio.TimeoutError:
-        print("OTA timed out! Continuing normal operation.")
-    except Exception as e:
-        print("OTA failed:", e)
-    a += 1
-    print("OTA attempt count:", a)
-
-async def led_blink():
+# OTA update function
+async def ota_update(SSID, PASSWORD,url):
     while True:
-        led_b.toggle()
-        await asyncio.sleep(1)# non-blocking
+        try:
+            ota_updater = OTAUpdater(SSID, PASSWORD,url,"main.py")
+            if ota_updater.update_available:
+                print("Update available. Starting update...")
+                update_available = True
+                time.sleep(2)
+                print("Update completed. Restarting...")
+            else:
+                print("No update available.")
+        except Exception as e:
+            print("Error during OTA update:", e)
+        await asyncio.sleep(8)  # Wait before retrying
+        
+#led function
+async def led():
+    global b
+    while not update_available:
         print(b)
         b+=1
+        led_b.toggle()
+        await asyncio.sleep(1) 
 
-async def main_loop():
-    start = time.time()
-    while True:
-        if time.time() - start > 8:
-            await ota_task(timeout_sec=8)
-            start = time.time()
-        await asyncio.sleep(0.1)  # give control back to asyncio
-
-# Run asyncio event loop
+# Main function to run tasks
 async def main():
-    # Run LED blinking and main loop concurrently
-    await asyncio.gather(
-        led_blink(),
-        main_loop()
-    )
+    global SSID
+    global PASSWORD
+    global url
+    task1 = asyncio.create_task(ota_update(SSID, PASSWORD,url))
+    task2 = asyncio.create_task(led())
+    await asyncio.gather(task1, task2)
+    if update_available:
+        print("Performing OTA update and restarting...")
+        ota_updater.perform_update()
+        machine.reset()
 
 asyncio.run(main())
 
