@@ -8,6 +8,7 @@ from WIFI_CONFIG import SSID, PASSWORD,url
 
 global led
 ledd=Pin(27, Pin.OUT)
+ledd.value(0)
 global led_r
 led_r = Pin(21, Pin.OUT)
 global led_g
@@ -41,13 +42,13 @@ def ota_update(SSID, PASSWORD,url):
         global ota_updater
         global update_available
         try:
+            ledd.value(1)
             ota_updater = OTAUpdater(SSID, PASSWORD,url,"main.py")
             ota_updater.connect_wifi()
             ota_updater.check_for_updates()
             if ota_updater.update_available:
                 print("Update available. Starting update...")
                 update_available = True
-                ledd.value(1)
                 time.sleep(2)
                 print("Update completed. Restarting...")
                 break
@@ -55,9 +56,13 @@ def ota_update(SSID, PASSWORD,url):
                 print("No update available.")
                 del ota_updater
                 update_available = False
+                ledd.value(0)
         except Exception as e:
             print("Error during OTA update:", e)
+            ledd.value(0)
+        ledd.value(0)    
         time.sleep(8)  # Wait before retrying
+        
 
 # Main function to run tasks
 async def main():
