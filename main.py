@@ -50,8 +50,10 @@ def ota_update(SSID, PASSWORD,url):
         try:
             ledd.value(1)
             ota_updater = OTAUpdater(SSID, PASSWORD,url,"main.py")
+            ledw.value(1)
             ota_updater.connect_wifi()
             ota_updater.check_for_updates()
+            ledw.value(0)
             if ota_updater.update_available:
                 print("Update available. Starting update...")
                 update_available = True
@@ -79,6 +81,7 @@ async def main():
     
     
 asyncio.run(main())
+
 
 
 
