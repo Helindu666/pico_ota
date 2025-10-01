@@ -44,7 +44,6 @@ def ota_update(SSID, PASSWORD,url):
                 update_available = True
                 ledd.value(1)
                 time.sleep(2)
-                ledd.value(0)
                 ota_updater.download_and_install_update_if_available()
                 print("Update completed. Restarting...")
             else:
@@ -61,3 +60,4 @@ async def main():
     await led()
     
 asyncio.run(main())
+
