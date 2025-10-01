@@ -1,5 +1,6 @@
 import _thread
 import time
+import machine
 from machine import Pin
 import uasyncio as asyncio
 from ota import OTAUpdater
@@ -29,6 +30,10 @@ async def led():
         b+=1
         led_b.toggle()
         await asyncio.sleep(1)
+        led_g.toggle()
+        await asyncio.sleep(1)
+        led_r.toggle()
+        await asyncio.sleep(1)
 
 # OTA update function
 def ota_update(SSID, PASSWORD,url):
@@ -44,8 +49,8 @@ def ota_update(SSID, PASSWORD,url):
                 update_available = True
                 ledd.value(1)
                 time.sleep(2)
-                ota_updater.download_and_install_update_if_available()
                 print("Update completed. Restarting...")
+                break
             else:
                 print("No update available.")
                 del ota_updater
@@ -58,6 +63,8 @@ def ota_update(SSID, PASSWORD,url):
 async def main():
     _thread.start_new_thread(ota_update, (SSID, PASSWORD,url))
     await led()
+    ota_updater.download_and_install_update_if_available()
+    machine.reset()
+    
     
 asyncio.run(main())
-
